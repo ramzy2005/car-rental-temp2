@@ -12,7 +12,7 @@ function OurCars() {
   const cars = [
     {
       badge: "Best Seller",
-      img: "./car1.png", // Transparent bg example or you can swap
+      img: "car-hero.webp", // Transparent bg example or you can swap
       name: "Toyota Supra",
       price: "$180/day",
       fuel: "Petrol",
@@ -23,7 +23,7 @@ function OurCars() {
     },
     {
       badge: "New",
-      img: "./car2.png", 
+      img: "./car-2.png", 
       name: "BMW M4",
       price: "$200/day",
       fuel: "Petrol",
@@ -34,7 +34,7 @@ function OurCars() {
     },
     {
       badge: "Luxury",
-      img: "./car2.png",
+      img: "car-hero.webp",
       name: "Audi R8",
       price: "$350/day",
       fuel: "Petrol",
@@ -45,7 +45,7 @@ function OurCars() {
     },
     {
       badge: "Sport",
-      img: "./car1.png",
+      img: "./car-2.png",
       name: "Mercedes AMG",
       price: "$400/day",
       fuel: "Petrol",
@@ -56,7 +56,7 @@ function OurCars() {
     },
     {
       badge: "Electric",
-      img: "./car2.png",
+      img: "car-hero.webp",
       name: "Tesla Model S",
       price: "$300/day",
       fuel: "Electric",

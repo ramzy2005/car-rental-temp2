@@ -80,8 +80,8 @@ function WhatMakesMyCar() {
         transition={{ duration: 0.8, delay: 1.2 }}
       >
         <img
-          src="./car2.png"
-          className="w-[90%] sm:w-[80%] max-w-md object-contain"
+          src="./car-hero.webp"
+          className="w-[100%] sm:w-[80%] max-w-md object-contain"
           alt="Car"
         />
       </motion.div>
