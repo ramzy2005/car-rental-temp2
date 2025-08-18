@@ -36,7 +36,7 @@ function Navbar() {
         <div
           id="logo"
           className="flex items-center justify-center h-16"
-          style={{ fontFamily: "var(--font-rum-raisin)" }}
+          
         >
           <span className="text-xl md:text-2xl text-gray-100 font-semibold">my</span>
           <span className="text-xl md:text-2xl text-green-400 font-semibold">car</span>
