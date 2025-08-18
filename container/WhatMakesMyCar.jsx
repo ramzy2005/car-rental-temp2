@@ -80,7 +80,7 @@ function WhatMakesMyCar() {
         transition={{ duration: 0.8, delay: 1.2 }}
       >
         <img
-          src="./car2.jpg"
+          src="./car2.png"
           className="w-[90%] sm:w-[80%] max-w-md object-contain"
           alt="Car"
         />
