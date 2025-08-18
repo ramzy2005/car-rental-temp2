@@ -12,7 +12,7 @@ function OurCars() {
   const cars = [
     {
       badge: "Best Seller",
-      img: "car7.png", 
+      img: "car6.png", 
       name: "Toyota Supra",
       price: "$180/day",
       fuel: "Petrol",
