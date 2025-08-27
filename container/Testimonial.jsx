@@ -1,13 +1,11 @@
 "use client";
 
-import React from "react";
-import Slider from "react-slick";
+import { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import ClassNames from "embla-carousel-class-names";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
-import { motion } from "framer-motion"; // <-- import motion here
-
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 const testimonials = [
   {
@@ -62,31 +60,35 @@ const testimonials = [
   },
 ];
 
-const Testimonial = () => {
-  const settings = {
-    dots: true,
-    arrows: false,
-    infinite: true,
-    speed: 600,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 768,
-        settings: { slidesToShow: 1 },
-      },
-    ],
-  };
+export default function Testimonial() {
+  const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, skipSnaps: false },
+    [autoplay, ClassNames()]
+  );
 
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, index) => (
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    setScrollSnaps(emblaApi.scrollSnapList());
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+
+    emblaApi.on("scroll", () => autoplay.stop());
+    emblaApi.on("settle", () => autoplay.play());
+
+    onSelect();
+  }, [emblaApi]);
+
+  const scrollTo = (i) => emblaApi && emblaApi.scrollTo(i);
+  const handleMouseEnter = () => autoplay.stop();
+  const handleMouseLeave = () => autoplay.play();
+
+  const renderStars = (rating) =>
+    Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
         className={`w-4 h-4 ${
@@ -94,31 +96,28 @@ const Testimonial = () => {
         }`}
       />
     ));
-  };
 
   return (
-    <section className="py-16 bg-gray-50 overflow-hidden mt-20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            What Our Clients Say
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Don't just take our word for it - hear from our satisfied customers who
-            have experienced our exceptional service firsthand.
-          </p>
-        </div>
+    <section
+      className="py-16 bg-gray-50 overflow-hidden mt-20"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          What Our Clients Say
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
+          Don't just take our word for it - hear from our satisfied customers who
+          have experienced our exceptional service firsthand.
+        </p>
 
-        <div className="w-full max-w-7xl mx-auto">
-          <Slider {...settings}>
-            {testimonials.map((testimonial, index) => (
-              <motion.div
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex">
+            {testimonials.map((testimonial) => (
+              <div
                 key={testimonial.id}
-                className="px-4"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33%] min-w-0 px-4"
               >
                 <Card className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 mx-auto">
                   <CardContent className="p-8">
@@ -144,13 +143,26 @@ const Testimonial = () => {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
-          </Slider>
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div className="flex justify-center mt-8 gap-3">
+          {scrollSnaps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(i)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === selectedIndex
+                  ? "bg-blue-600 scale-125"
+                  : "bg-blue-400 hover:bg-blue-500"
+              }`}
+            />
+          ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default Testimonial;
+}
