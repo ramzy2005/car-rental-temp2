@@ -1,73 +1,90 @@
 "use client";
 
-import React, { useRef } from "react";
-import Slider from "react-slick";
+import { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { motion } from "framer-motion";
 
 import { sampleCars } from "@/data/cars";
 import CarCard from "@/components/CarCard";
 
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
 export default function CarSlider() {
-  const sliderRef = useRef(null);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2500,
-    arrows: false,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-      { breakpoint: 480, settings: { slidesToShow: 1 } },
-    ],
-  };
+  // Update progress bar
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const updateProgress = () => {
+      const progress = Math.max(0, Math.min(1, emblaApi.scrollProgress()));
+      setScrollProgress(progress);
+    };
+
+    emblaApi.on("scroll", updateProgress);
+    emblaApi.on("reInit", updateProgress);
+
+    updateProgress();
+  }, [emblaApi]);
+
+  // Prev & Next buttons
+  const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
+  const scrollNext = () => emblaApi && emblaApi.scrollNext();
 
   return (
-    <div id="cars" className="relative mx-auto w-9/12">
+    <div id="cars" className="relative mx-auto w-11/12 sm:w-10/12 lg:w-9/12">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
         LUXURY LIMOUSINE <br /> FOR MAXIMUM SATISFACTION
       </h1>
 
       {/* Prev Button */}
       <button
-        onClick={() => sliderRef.current.slickPrev()}
-        className="absolute left-[-40px] top-1/2 -translate-y-1/2 z-10 bg-gray-800 bg-opacity-70 cursor-pointer text-white p-2 rounded-full hover:bg-opacity-90"
+        onClick={scrollPrev}
+        className="absolute left-[-30px] top-1/2 -translate-y-1/2 z-10 bg-gray-800 bg-opacity-70 cursor-pointer text-white p-2 rounded-full hover:bg-opacity-90"
         aria-label="Previous Slide"
       >
         &#8592;
       </button>
 
-      {/* Slider */}
-      <Slider ref={sliderRef} {...settings}>
-        {sampleCars.map((car, index) => (
-          <motion.div
-            key={car.id}
-            className="px-2 flex justify-center items-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.4 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <CarCard car={car} />
-          </motion.div>
-        ))}
-      </Slider>
+      {/* Embla Carousel */}
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex">
+          {sampleCars.map((car, index) => (
+            <motion.div
+              key={car.id}
+              // Responsive widths
+              className="
+                flex-[0_0_100%]   /* default = 1 slide per view */
+                sm:flex-[0_0_50%] /* 2 per view on tablets */
+                lg:flex-[0_0_25%] /* 4 per view on desktop */
+                min-w-0 p-2
+              "
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.4 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <CarCard car={car} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
       {/* Next Button */}
       <button
-        onClick={() => sliderRef.current.slickNext()}
-        className="cursor-pointer absolute right-[-40px] top-1/2 -translate-y-1/2 z-10 bg-gray-800 bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-90"
+        onClick={scrollNext}
+        className="cursor-pointer absolute right-[-30px] top-1/2 -translate-y-1/2 z-10 bg-gray-800 bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-90"
         aria-label="Next Slide"
       >
         &#8594;
       </button>
+
+      {/* Progress bar */}
+      <div className="mt-6 h-2 w-full bg-gray-300 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-blue-500 transition-all duration-200"
+          style={{ width: `${scrollProgress * 100}%` }}
+        />
+      </div>
     </div>
   );
 }
